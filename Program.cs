@@ -4,6 +4,9 @@ namespace Stationboard
 {
     class Program
     {
+        const string destPlace = "Zurich";
+        const int limitNr = 3;
+
         static void Main(string[] args)
         {
             Console.WriteLine("### Abfahrtstafel ###");
@@ -42,8 +45,8 @@ namespace Stationboard
 
         private static RestRequest CreateRequest() {
             RestRequest request = new RestRequest("stationboard");
-            request.AddParameter("station", "Zurich"); // TODO In Konstante speichern
-            request.AddParameter("limit", 50); // TODO In Konstante speichern
+            request.AddParameter("station", destPlace); // TODO In Konstante speichern
+            request.AddParameter("limit", limitNr); // TODO In Konstante speichern
             request.AddParameter("fields[]", "stationboard/stop/departure");
             request.AddParameter("fields[]", "stationboard/stop/delay");
             request.AddParameter("fields[]", "stationboard/category");
