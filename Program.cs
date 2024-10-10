@@ -1,4 +1,5 @@
 ﻿using RestSharp;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Stationboard
 {
@@ -6,7 +7,7 @@ namespace Stationboard
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("### Abfahrtstabelle ###");
+            Console.WriteLine("### Abfahrtstafel ###");
 
             var options = new RestClientOptions("https://transport.opendata.ch/v1");
             var client = new RestClient(options);
@@ -19,17 +20,24 @@ namespace Stationboard
             request.AddParameter("fields[]", "stationboard/number");
             request.AddParameter("fields[]", "stationboard/to");
 
-            var response = client.Get<StationboardResponse>(request);
+            var response = client.Get<StationboardResponse>(request); // get json data
 
+            // iterates over every object in stationboard
             foreach (Stationboard sb in response.stationboard) {              
                 DateTime dt = DateTime.Parse(sb.stop.departure);
+                
+                string departure = dt.ToString("HH:mm");
                 string delay = ExtractDelay(sb.stop.delay);
-                Console.WriteLine("{0} {1} {2}{3} {4}", dt.ToString("HH:mm"), delay, sb.category, sb.number, sb.to);
+                string vehicle = sb.category + sb.number;
+                string destination = sb.to;
+
+                Console.WriteLine("{0} {1} {2} {3}", departure, delay, vehicle, destination);
             }
         }
 
-        private static string ExtractDelay(int? delay)
-        {
+        // methode verbessern (einfacher, kürzer?)
+        private static string ExtractDelay(int? delay) => delay == null || delay == 0 ? "" :  "+" + delay;
+        /*{
             if (delay == null)
             {
                 return "";
@@ -40,10 +48,10 @@ namespace Stationboard
             {
                 return "+" + delay;
             }
-        }
+        }*/
 
-        private record Stationboard(StationboardStop stop, string to, int number, string category);
-        private record StationboardStop(string departure, int? delay);
+        private record Stationboard(StationboardStop stop, string to, int number, string category); // stop => nested inside stationboard
+        private record StationboardStop(string departure, int? delay); // delay nullable value type
         private record StationboardResponse(Stationboard[] stationboard);
     }
 }
