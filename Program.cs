@@ -1,8 +1,4 @@
 ﻿using RestSharp;
-using System;
-using System.Security.Cryptography.X509Certificates;
-using System;
-using System.Threading;
 
 namespace Stationboard
 {
@@ -19,15 +15,35 @@ namespace Stationboard
             request.AddParameter("limit", 5);
             request.AddParameter("fields[]", "stationboard/stop/departure");
             request.AddParameter("fields[]", "stationboard/stop/delay");
-            request.AddParameter("fields[]", "stationboard/stop/to");
-            request.AddParameter("fileds[]", "stationboard/stop/name");
-            request.AddParameter("fileds[]", "stationboard/stop/category");
-            request.AddParameter("fileds[]", "stationboard/stop/number");
+            request.AddParameter("fields[]", "stationboard/category");
+            request.AddParameter("fields[]", "stationboard/number");
+            request.AddParameter("fields[]", "stationboard/to");
 
-            var response = client.Get(request);
+            var response = client.Get<StationboardResponse>(request);
 
-            Console.WriteLine("Type: {0}", response.ContentType);
-            Console.WriteLine("Content: {0}", response.Content);
+            foreach (Stationboard sb in response.stationboard) {              
+                DateTime dt = DateTime.Parse(sb.stop.departure);
+                string delay = ExtractDelay(sb.stop.delay);
+                Console.WriteLine("{0} {1} {2}{3} {4}", dt.ToString("HH:mm"), delay, sb.category, sb.number, sb.to);
+            }
         }
+
+        private static string ExtractDelay(int? delay)
+        {
+            if (delay == null)
+            {
+                return "";
+            } else if (delay == 0)
+            {
+                return "";
+            } else
+            {
+                return "+" + delay;
+            }
+        }
+
+        private record Stationboard(StationboardStop stop, string to, int number, string category);
+        private record StationboardStop(string departure, int? delay);
+        private record StationboardResponse(Stationboard[] stationboard);
     }
 }
