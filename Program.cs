@@ -13,8 +13,8 @@ namespace Stationboard
 
             StationboardResponse response = GetStationboard();
 
-            //string headingFormat = String.Format("{0, -20} {1, -20} {2, -20} {3, -20}", "Departure Time", "Dealy in Minutes", "Vehicle", "Destination");
-            //Console.WriteLine(headingFormat);
+            string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Dealy in Minutes", "Vehicle", "Destination");
+            Console.WriteLine(headingFormat);
 
             // iterates over every object in stationboard
             foreach (Stationboard sb in response.stationboard)
@@ -23,7 +23,7 @@ namespace Stationboard
                 string delay = ExtractDelay(sb.stop.delay);
                 string vehicle = ExtractVehicle(sb);
 
-                string strFormat = String.Format("{0} {1, -5} {2, -10} {3, -20}", departure, delay, vehicle, sb.to);
+                string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
                 Console.WriteLine(strFormat);
             }
         }
