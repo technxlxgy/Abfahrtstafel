@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Abfahrtstafel")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+049b266713e25c7aba7e61908108036f023cb084")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0b9cadbb5454317194626c21aa4b4910a1e6f079")]
 [assembly: System.Reflection.AssemblyProductAttribute("Abfahrtstafel")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Abfahrtstafel")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
