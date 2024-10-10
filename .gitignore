@@ -1,2 +1,4 @@
 # Ignores Visual Studio temporary folder
 .vs/
+
+obj/
