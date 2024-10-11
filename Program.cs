@@ -4,28 +4,40 @@ namespace Stationboard
 {
     class Program
     {
-        // default constant values (if no input is written)
+        // default constant values (if no input is given)
         public const string DEST_PLACE = "Romanshorn";
         public const int LIMIT = 3;
 
         static void Main(string[] args)
         {
             Console.WriteLine("### Abfahrtstafel ###");
-            
-            // define station
-            Console.WriteLine("Please enter the station: ");
-            string inputDestPlace = Console.ReadLine();
-     
-            // define limit
-            Console.WriteLine("Please enter a limit: ");
-            int inputLimit = int.Parse(Console.ReadLine());
 
-            Program program = new Program(inputDestPlace, inputLimit);
+            // default station and limit
+            string inputDestPlace = DEST_PLACE;
+            int inputLimit = LIMIT;
  
-            if (args.Length > 0)
+            foreach(var arg in args)
             {
-                inputDestPlace = args[0];
-                inputLimit = int.Parse(args[1]);
+                if (arg.StartsWith("--station="))
+                {
+                    inputDestPlace = arg.Substring("--station".Length);
+                }
+                else if (arg.StartsWith("--limit=="))
+                {
+                    if (int.TryParse(arg.Substring("--limit".Length), out int limit))
+                    { 
+                        inputLimit = limit;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid limit value. Using default limit.");
+                    }
+                }
+            }
+            //if (args.Length > 0)
+            //{
+                //inputDestPlace = args[0];
+                //inputLimit = int.Parse(args[1]);
                 StationboardResponse response = GetStationboard();
 
                 string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
@@ -41,16 +53,13 @@ namespace Stationboard
                     string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
                     Console.WriteLine(strFormat);
                 }
-            } else
-            {
-                
-            }
+            //}
         }
 
-        public static StationboardResponse GetStationboard()
+        public static StationboardResponse GetStationboard(string destPlace,  int limit)
         {
             var client = CreateClient();
-            var requestStationboard = CreateRequestStationboard();
+            var requestStationboard = CreateRequestStationboard(destPlace, limit);
             var response = client.Get<StationboardResponse>(requestStationboard); // get json data
             return response;
         }
@@ -62,11 +71,11 @@ namespace Stationboard
             return new RestClient(options);
         }
 
-        public static RestRequest CreateRequestStationboard()
+        public static RestRequest CreateRequestStationboard(string destPlace, int limit)
         {
             RestRequest requestStationboard = new RestRequest("stationboard");
-            requestStationboard.AddParameter("station", DEST_PLACE);
-            requestStationboard.AddParameter("limit", LIMIT);
+            requestStationboard.AddParameter("station", destPlace);
+            requestStationboard.AddParameter("limit", limit);
             requestStationboard.AddParameter("fields[]", "stationboard/stop/departure");
             requestStationboard.AddParameter("fields[]", "stationboard/stop/delay");
             requestStationboard.AddParameter("fields[]", "stationboard/category");
