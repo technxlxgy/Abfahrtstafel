@@ -1,5 +1,8 @@
 ﻿using RestSharp;
 
+using System.Security.Cryptography.X509Certificates;
+//using static System.Runtime.InteropServices.JavaScript.JSType;
+
 namespace Stationboard
 {
     class Program
@@ -13,14 +16,56 @@ namespace Stationboard
 
             string station = DEST_PLACE;
             int limit = LIMIT;
+
+            // TODO kürzer oder anders schreiben (unnötig viele Zeilen) + check if valid station angegeben !!
             if (args.Length > 0)
             {
-                station = args[0];
-                limit = Convert.ToInt32(args[1]);
+                // check if any of the parsed arguments is of data type int
+                bool isNumberOne = int.TryParse(args[0], out int valueOne);
+                bool isNumberTwo = int.TryParse(args[1], out int valueTwo);
+
+                if (isNumberOne)
+                {
+                    limit = Convert.ToInt32(args[0]);
+                    Console.WriteLine(limit);
+                }
+                else if (isNumberTwo)
+                {
+                    limit = Convert.ToInt32(args[1]);
+                    Console.WriteLine(limit);
+                }
+
+                // check if any of the parsed arguments is of data type string
+                if (IsString(args[0]))
+                {
+                    station = args[0];
+                }
+                else if (IsString(args[1]))
+                {
+                    station = args[1];
+                }
             }
-            
+
+            // TODO kürzer oder anders schreiben (unnötig viele Zeilen) 
+                static bool IsString(string input)
+                {
+                    // Check if the input can be parsed to an integer
+                    if (int.TryParse(input, out _))
+                    {
+                        return false;
+                    }
+
+                    // Check if the input can be parsed to a double
+                    if (double.TryParse(input, out _))
+                    {
+                        return false;
+                    }
+
+                    // If all checks fail, the input is likely a string
+                    return true;
+                }
+
             Console.WriteLine("Station: {0}, Display {1} departues", station, limit);
-            //Console.WriteLine("Display: {0} departures", limit);
 
             Console.WriteLine("### Abfahrtstafel ###");
 
