@@ -13,7 +13,7 @@ namespace Stationboard
 
             StationboardResponse response = GetStationboard();
 
-            string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Dealy in Minutes", "Vehicle", "Destination");
+            string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
             Console.WriteLine(headingFormat);
 
             // iterates over every object in stationboard
