@@ -12,16 +12,19 @@ namespace Stationboard
             Console.WriteLine("Anzahl Argumente: {0}", args.Length);
 
             string station = DEST_PLACE;
+            int limit = LIMIT;
             if (args.Length > 0)
             {
                 station = args[0];
+                limit = Convert.ToInt32(args[1]);
             }
             
-            Console.WriteLine("Station: {0}", station);
+            Console.WriteLine("Station: {0}, Display {1} departues", station, limit);
+            //Console.WriteLine("Display: {0} departures", limit);
 
             Console.WriteLine("### Abfahrtstafel ###");
 
-            StationboardResponse response = GetStationboard(station);
+            StationboardResponse response = GetStationboard(station, limit);
 
             string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
             Console.WriteLine(headingFormat);
@@ -38,10 +41,10 @@ namespace Stationboard
             }
         }
 
-        public static StationboardResponse GetStationboard(string getStation)
+        public static StationboardResponse GetStationboard(string getStation, int getLimit)
         {
             var client = CreateClient();
-            var requestStationboard = CreateRequestStationboard(getStation);
+            var requestStationboard = CreateRequestStationboard(getStation, getLimit);
             var response = client.Get<StationboardResponse>(requestStationboard); // get json data
             return response;
         }
@@ -53,11 +56,11 @@ namespace Stationboard
             return new RestClient(options);
         }
 
-        public static RestRequest CreateRequestStationboard(string requestStation)
+        public static RestRequest CreateRequestStationboard(string requestStation, int requestLimit)
         {
             RestRequest requestStationboard = new RestRequest("stationboard");
             requestStationboard.AddParameter("station", requestStation);
-            requestStationboard.AddParameter("limit", LIMIT);
+            requestStationboard.AddParameter("limit", requestLimit);
             requestStationboard.AddParameter("fields[]", "stationboard/stop/departure");
             requestStationboard.AddParameter("fields[]", "stationboard/stop/delay");
             requestStationboard.AddParameter("fields[]", "stationboard/category");
