@@ -4,66 +4,86 @@ namespace Stationboard
 {
     class Program
     {
-        const string destPlace = "Zurich";
-        const int limitNr = 3;
+        // default constant values (if no input is written)
+        public const string DEST_PLACE = "Romanshorn";
+        public const int LIMIT = 3;
 
         static void Main(string[] args)
         {
             Console.WriteLine("### Abfahrtstafel ###");
+            
+            // define station
+            Console.WriteLine("Please enter the station: ");
+            string inputDestPlace = Console.ReadLine();
+     
+            // define limit
+            Console.WriteLine("Please enter a limit: ");
+            int inputLimit = int.Parse(Console.ReadLine());
 
-            StationboardResponse response = GetStationboard();
-
-            string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
-            Console.WriteLine(headingFormat);
-
-            // iterates over every object in stationboard
-            foreach (Stationboard sb in response.stationboard)
+            Program program = new Program(inputDestPlace, inputLimit);
+ 
+            if (args.Length > 0)
             {
-                string departure = ExtractDepartureTime(sb);
-                string delay = ExtractDelay(sb.stop.delay);
-                string vehicle = ExtractVehicle(sb);
+                inputDestPlace = args[0];
+                inputLimit = int.Parse(args[1]);
+                StationboardResponse response = GetStationboard();
 
-                string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
-                Console.WriteLine(strFormat);
+                string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
+                Console.WriteLine(headingFormat);
+
+                // iterates over every object in stationboard
+                foreach (Stationboard sb in response.stationboard)
+                {
+                    string departure = ExtractDepartureTime(sb);
+                    string delay = ExtractDelay(sb.stop.delay);
+                    string vehicle = ExtractVehicle(sb);
+
+                    string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
+                    Console.WriteLine(strFormat);
+                }
+            } else
+            {
+                
             }
         }
 
-        private static StationboardResponse GetStationboard()
+        public static StationboardResponse GetStationboard()
         {
             var client = CreateClient();
-            var request = CreateRequest();
-            var response = client.Get<StationboardResponse>(request); // get json data
+            var requestStationboard = CreateRequestStationboard();
+            var response = client.Get<StationboardResponse>(requestStationboard); // get json data
             return response;
         }
 
-        private static RestClient CreateClient()
+        public static RestClient CreateClient()
         {
             // TODO Max timeout?
             var options = new RestClientOptions("https://transport.opendata.ch/v1");
             return new RestClient(options);
         }
 
-        private static RestRequest CreateRequest() {
-            RestRequest request = new RestRequest("stationboard");
-            request.AddParameter("station", destPlace); // TODO In Konstante speichern
-            request.AddParameter("limit", limitNr); // TODO In Konstante speichern
-            request.AddParameter("fields[]", "stationboard/stop/departure");
-            request.AddParameter("fields[]", "stationboard/stop/delay");
-            request.AddParameter("fields[]", "stationboard/category");
-            request.AddParameter("fields[]", "stationboard/number");
-            request.AddParameter("fields[]", "stationboard/to");
-            return request;
+        public static RestRequest CreateRequestStationboard()
+        {
+            RestRequest requestStationboard = new RestRequest("stationboard");
+            requestStationboard.AddParameter("station", DEST_PLACE);
+            requestStationboard.AddParameter("limit", LIMIT);
+            requestStationboard.AddParameter("fields[]", "stationboard/stop/departure");
+            requestStationboard.AddParameter("fields[]", "stationboard/stop/delay");
+            requestStationboard.AddParameter("fields[]", "stationboard/category");
+            requestStationboard.AddParameter("fields[]", "stationboard/number");
+            requestStationboard.AddParameter("fields[]", "stationboard/to");
+            return requestStationboard;
         }
 
-        private static string ExtractDepartureTime(Stationboard sb) => DateTime.Parse(sb.stop.departure).ToString("HH:mm");
+        public static string ExtractDepartureTime(Stationboard sb) => DateTime.Parse(sb.stop.departure).ToString("HH:mm");
 
-        private static string ExtractVehicle(Stationboard sb) => sb.category + sb.number;
+        public static string ExtractVehicle(Stationboard sb) => sb.category + sb.number;
 
         // TODO Stimmt diese Methode?
-        private static string ExtractDelay(int? delay) => delay == null || delay == 0 ? "" :  "+" + delay;
+        public static string ExtractDelay(int? delay) => delay == null || delay == 0 ? "" :  "+" + delay;
 
-        private record Stationboard(StationboardStop stop, string to, string number, string category); // stop => nested inside stationboard
-        private record StationboardStop(string departure, int? delay); // delay nullable value type
-        private record StationboardResponse(Stationboard[] stationboard);
+        public record Stationboard(StationboardStop stop, string to, string number, string category); // stop => nested inside stationboard
+        public record StationboardStop(string departure, int? delay); // delay nullable value type
+        public record StationboardResponse(Stationboard[] stationboard);
     }
 }
