@@ -23,28 +23,25 @@ namespace Stationboard
                 foreach (var arg in args)
                 {
                     // check if any of the parsed arguments is of data type int
-                    bool isNumber = int.TryParse(arg, out int value);
-                    if (isNumber)
+                    if (isNumber(arg))
                     {
                         limit = Convert.ToInt32(arg);
                     }
 
-                    // check if any of the parsed arguments is of data type string
-                    else if (IsString(arg))
+                    // the parsed arguments is of data type string
+                    else
                     {
                         station = arg;
                     }
                 }                
             }
 
-            static bool IsString(string input)
+            static bool isNumber(string arg)
             {
-                // check if the input CONNOT be parsed to an integer NOR double
-                return !int.TryParse(input, out _) && !double.TryParse(input, out _);
+                return int.TryParse(arg, out int value);
             }
 
-            Console.WriteLine("Station: {0}, Display {1} departues", station, limit);
-
+            Console.WriteLine("Station: {0}, Display {1} departues\r\n", station, limit);
             Console.WriteLine("### Abfahrtstafel ###");
             
             StationboardResponse response = GetStationboard(station, limit);
