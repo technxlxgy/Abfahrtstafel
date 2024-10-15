@@ -27,12 +27,14 @@ namespace Stationboard
                 return int.TryParse(arg, out int value);
             }
 
+            var table = new Table();
+            table.Border = TableBorder.Rounded;
+
+            //table.AddRow("Station: {0}", station);
+
             Console.WriteLine("### Station: {0} ###\r\n", station);
 
             StationboardResponse response = GetStationboard(station, limit);
-
-            var table = new Table();
-            table.Border = TableBorder.Rounded;
 
             table.AddColumn("[bold yellow]Departure[/]");
             table.AddColumn("[bold yellow]Vehicle[/]");
@@ -51,7 +53,7 @@ namespace Stationboard
                 /*string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
                 Console.WriteLine(strFormat);*/
 
-                table.AddRow(departure + " " + delay, vehicle, sb.to);
+                table.AddRow(departure + " [red]" + delay + "[/]", vehicle, sb.to);
             }
 
             AnsiConsole.Write(table);
@@ -68,11 +70,9 @@ namespace Stationboard
 
         public static RestClient CreateClient()
         {
-            //httpClient.Timeout = TimeSpan.FromSeconds(20);
-            //public TimeSpan Timeout { get; set; }
             var options = new RestClientOptions("https://transport.opendata.ch/v1")
             {
-                Timeout = TimeSpan.FromSeconds(10)
+                Timeout = TimeSpan.FromSeconds(10),
             };
             return new RestClient(options);
         }
