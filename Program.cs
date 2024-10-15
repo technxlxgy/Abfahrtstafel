@@ -30,8 +30,6 @@ namespace Stationboard
             var table = new Table();
             table.Border = TableBorder.Rounded;
 
-            //table.AddRow("Station: {0}", station);
-
             Console.WriteLine("### Station: {0} ###\r\n", station);
 
             StationboardResponse response = GetStationboard(station, limit);
@@ -40,18 +38,12 @@ namespace Stationboard
             table.AddColumn("[bold yellow]Vehicle[/]");
             table.AddColumn("[bold yellow]Destination[/]");
 
-            /*string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
-            Console.WriteLine(headingFormat);*/
-
             // iterates over every object in stationboard
             foreach (Stationboard sb in response.stationboard)
             {
                 string departure = ExtractDepartureTime(sb);
                 string delay = ExtractDelay(sb.stop.delay);
                 string vehicle = ExtractVehicle(sb);
-
-                /*string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
-                Console.WriteLine(strFormat);*/
 
                 table.AddRow(departure + " [red]" + delay + "[/]", vehicle, sb.to);
             }
@@ -94,7 +86,6 @@ namespace Stationboard
 
         public static string ExtractVehicle(Stationboard sb) => sb.category + sb.number;
 
-        // TODO Stimmt diese Methode?
         public static string ExtractDelay(int? delay) => delay == null || delay == 0 ? "" : "+" + delay;
 
         public record Stationboard(StationboardStop stop, string to, string number, string category); // stop => nested inside stationboard
