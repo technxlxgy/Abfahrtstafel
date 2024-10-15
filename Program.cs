@@ -8,32 +8,18 @@ namespace Stationboard
 {
     class Program
     {
-        public const string DEST_PLACE = "Zurich";
-        public const int LIMIT = 3;
+        public const string DEFAULT_STATION = "Zurich";
+        public const int DEFAULT_LIMIT = 10;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Anzahl Argumente: {0}", args.Length);
+            string station = DEFAULT_STATION;
+            int limit = DEFAULT_LIMIT;
 
-            string station = DEST_PLACE;
-            int limit = LIMIT;
-
-            if (args.Length > 0)
+            foreach (var arg in args)
             {
-                foreach (var arg in args)
-                {
-                    // check if any of the parsed arguments is of data type int
-                    if (isNumber(arg))
-                    {
-                        limit = Convert.ToInt32(arg);
-                    }
-
-                    // the parsed arguments is of data type string
-                    else
-                    {
-                        station = arg;
-                    }
-                }                
+                // Use the ternary operator for inline assignment
+                if (isNumber(arg)) limit = Convert.ToInt32(arg); else station = arg;
             }
 
             static bool isNumber(string arg)
@@ -41,9 +27,8 @@ namespace Stationboard
                 return int.TryParse(arg, out int value);
             }
 
-            Console.WriteLine("Station: {0}, Display {1} departues\r\n", station, limit);
-            Console.WriteLine("### Abfahrtstafel ###");
-            
+            Console.WriteLine("### Station: {0} ###\r\n", station);
+
             StationboardResponse response = GetStationboard(station, limit);
 
             string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
@@ -59,6 +44,8 @@ namespace Stationboard
                 string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
                 Console.WriteLine(strFormat);
             }
+
+            Console.ReadLine();
         }
 
         public static StationboardResponse GetStationboard(string getStation, int getLimit)
@@ -71,8 +58,12 @@ namespace Stationboard
 
         public static RestClient CreateClient()
         {
-            // TODO Max timeout?
-            var options = new RestClientOptions("https://transport.opendata.ch/v1");
+            //httpClient.Timeout = TimeSpan.FromSeconds(20);
+            //public TimeSpan Timeout { get; set; }
+            var options = new RestClientOptions("https://transport.opendata.ch/v1")
+            {
+                Timeout = TimeSpan.FromSeconds(10)
+            };
             return new RestClient(options);
         }
 
