@@ -31,8 +31,15 @@ namespace Stationboard
 
             StationboardResponse response = GetStationboard(station, limit);
 
-            string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
-            Console.WriteLine(headingFormat);
+            var table = new Table();
+            table.Border = TableBorder.Rounded;
+
+            table.AddColumn("[bold yellow]Departure[/]");
+            table.AddColumn("[bold yellow]Vehicle[/]");
+            table.AddColumn("[bold yellow]Destination[/]");
+
+            /*string headingFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", "Departure Time", "Delay in Minutes", "Vehicle", "Destination");
+            Console.WriteLine(headingFormat);*/
 
             // iterates over every object in stationboard
             foreach (Stationboard sb in response.stationboard)
@@ -41,10 +48,13 @@ namespace Stationboard
                 string delay = ExtractDelay(sb.stop.delay);
                 string vehicle = ExtractVehicle(sb);
 
-                string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
-                Console.WriteLine(strFormat);
+                /*string strFormat = String.Format("{0, -20} {1, -22} {2, -22} {3}", departure, delay, vehicle, sb.to);
+                Console.WriteLine(strFormat);*/
+
+                table.AddRow(departure + " " + delay, vehicle, sb.to);
             }
 
+            AnsiConsole.Write(table);
             Console.ReadLine();
         }
 
