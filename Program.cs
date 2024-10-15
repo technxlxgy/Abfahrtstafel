@@ -33,6 +33,18 @@ namespace Stationboard
             Console.WriteLine("### Station: {0} ###\r\n", station);
 
             StationboardResponse response = GetStationboard(station, limit);
+            
+            AnsiConsole.Status()
+                .Start("Fetching data...", ctx =>
+                {
+                    Thread.Sleep(1000);
+
+                    // Update the status and spinner
+                    ctx.Spinner(Spinner.Known.Aesthetic);
+                    ctx.SpinnerStyle(Style.Parse("green"));
+                    
+                    Thread.Sleep(1000);
+                });
 
             table.AddColumn("[bold yellow]Departure[/]");
             table.AddColumn("[bold yellow]Vehicle[/]");
@@ -91,5 +103,6 @@ namespace Stationboard
         public record Stationboard(StationboardStop stop, string to, string number, string category); // stop => nested inside stationboard
         public record StationboardStop(string departure, int? delay); // delay nullable value type
         public record StationboardResponse(Stationboard[] stationboard);
+
     }
 }
