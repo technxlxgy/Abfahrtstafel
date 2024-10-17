@@ -27,6 +27,13 @@ namespace Stationboard
                 public int? Limit { get; init; }
             }
 
+
+            static void FetchData()
+            {
+                
+            } 
+
+            
             // CLASS OR CLASS ??? FOR EXECUTING COMMANDS
             public override int Execute(CommandContext context, Settings settings)
             {
@@ -34,27 +41,27 @@ namespace Stationboard
                 string station = settings.Station ?? DEFAULT_STATION;
                 int limit = settings.Limit ?? DEFAULT_LIMIT;
 
-                Console.WriteLine($"### Station: {station} ###\r\n");
-
-                AnsiConsole.Status()
-                    .Start("Fetching data...", ctx =>
-                    {
-                        Thread.Sleep(1000);
-
-                        // Update the status and spinner
-                        ctx.Spinner(Spinner.Known.Dots3);
-                        ctx.SpinnerStyle(Style.Parse("green"));
-
-                        Thread.Sleep(1000);
-                    });
-
-                
                 // keep spinning until data is fetched
 
                 // call method GetStationboard to fetch stationboard data
-                StationboardResponse response = GetStationboard(station, limit);
+                //StationboardResponse response = GetStationboard(station, limit);
 
+                Console.WriteLine($"### Station: {station} ###\r\n");
 
+                StationboardResponse response = AnsiConsole.Status()
+                    .Start("Fetching data...", ctx =>
+                    {
+                        //Thread.Sleep(1000);
+
+                        // Update the status and spinner
+
+                        ctx.Spinner(Spinner.Known.Dots3);
+                        ctx.SpinnerStyle(Style.Parse("green"));
+
+                        return GetStationboard(station, limit);
+
+                        //Thread.Sleep(1000);
+                    });
 
                 // display results
                 DisplayResults(response, station);
