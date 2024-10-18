@@ -26,41 +26,25 @@ namespace Stationboard
                 [Description("Number of departing connections to return")]
                 public int? Limit { get; init; }
             }
-
-
-            static void FetchData()
-            {
-                
-            } 
-
             
-            // CLASS OR CLASS ??? FOR EXECUTING COMMANDS
+            // OVERRIDE METHOD FOR EXECUTING COMMANDS
             public override int Execute(CommandContext context, Settings settings)
             {
                 // default values (if no arguments are parsed)
                 string station = settings.Station ?? DEFAULT_STATION;
                 int limit = settings.Limit ?? DEFAULT_LIMIT;
 
-                // keep spinning until data is fetched
-
-                // call method GetStationboard to fetch stationboard data
-                //StationboardResponse response = GetStationboard(station, limit);
-
                 Console.WriteLine($"### Station: {station} ###\r\n");
 
+                // start spinner while fetching data
                 StationboardResponse response = AnsiConsole.Status()
                     .Start("Fetching data...", ctx =>
                     {
-                        //Thread.Sleep(1000);
-
-                        // Update the status and spinner
-
                         ctx.Spinner(Spinner.Known.Dots3);
                         ctx.SpinnerStyle(Style.Parse("green"));
 
+                        // return GetStationboard to fetch stationboard data inside of spinner context
                         return GetStationboard(station, limit);
-
-                        //Thread.Sleep(1000);
                     });
 
                 // display results
@@ -85,8 +69,6 @@ namespace Stationboard
         {
             var client = CreateClient();
             var requestStationboard = CreateRequestStationboard(getStation, getLimit);
-
-            // Sleep while fetching
 
             return client.Get<StationboardResponse>(requestStationboard);
         }
