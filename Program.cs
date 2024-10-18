@@ -11,11 +11,10 @@ namespace Stationboard
     class Program
     {
 
-        // NEW CLASS FOR COMMANDS
+        // ARGUMENTS
         public sealed class StationCommand : Command<StationCommand.Settings>
         {
 
-            // CLASS FOR SETTINGS
             public sealed class Settings : CommandSettings
             {
                 [CommandOption("-s|--station <Station>")]
@@ -27,7 +26,6 @@ namespace Stationboard
                 public int? Limit { get; init; }
             }
             
-            // OVERRIDE METHOD FOR EXECUTING COMMANDS
             public override int Execute(CommandContext context, Settings settings)
             {
                 // default values (if no arguments are parsed)
@@ -57,14 +55,14 @@ namespace Stationboard
         public const string DEFAULT_STATION = "Zurich";
         public const int DEFAULT_LIMIT = 10;
 
-        // MAIN METHOD
+        // MAIN
         static int Main(string[] args)
         {
             var app = new CommandApp<StationCommand>();
             return app.Run(args);
         }
 
-        // METHOD GET STATION BOARD
+        // GET RESPONSE
         public static StationboardResponse GetStationboard(string getStation, int getLimit)
         {
             var client = CreateClient();
@@ -73,7 +71,7 @@ namespace Stationboard
             return client.Get<StationboardResponse>(requestStationboard);
         }
 
-        // CREATE CLIENT METHOD
+        // CREATE CLIENT
         public static RestClient CreateClient()
         {
             var options = new RestClientOptions("https://transport.opendata.ch/v1")
@@ -83,7 +81,7 @@ namespace Stationboard
             return new RestClient(options);
         }
 
-        // CREATE REQUEST STATIONBOARD METHOD
+        // CREATE REQUEST
         public static RestRequest CreateRequestStationboard(string requestStation, int requestLimit)
         {
             RestRequest requestStationboard = new RestRequest("stationboard");
@@ -97,7 +95,7 @@ namespace Stationboard
             return requestStationboard;
         }
 
-        // DISPLAY RESULTS METHOD
+        // DISPLAY RESULTS
         public static void DisplayResults(StationboardResponse response, string station)
         {
             var table = new Table();
@@ -128,7 +126,6 @@ namespace Stationboard
             Console.ReadLine();
         }
 
-        // NO METHOD NOR CLASS 
         public static string ExtractDepartureTime(Stationboard sb) => DateTime.Parse(sb.stop.departure).ToString("HH:mm");
 
         public static string ExtractVehicle(Stationboard sb) => sb.category + sb.number;
